@@ -5,8 +5,18 @@ import { UserSchema } from '../models/user.schema';
 
 @Module({
   imports: [
-    MongooseModule.forFeature([{ name: 'User', schema: UserSchema }]),
-   
+    MongooseModule.forFeatureAsync([
+      {
+        name: 'User',
+        useFactory: () => {
+          const schema = UserSchema;
+          schema.pre('save', function () {
+            console.log('This is pre save');
+          });
+          return schema;
+        },
+      },
+    ]),
   ],
   providers: [UserService],
   controllers: [],

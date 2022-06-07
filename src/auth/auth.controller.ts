@@ -3,37 +3,36 @@ import { AuthGuard } from '@nestjs/passport/dist/auth.guard';
 import { RegisterDTO } from 'src/user/register.dto';
 import { UserService } from 'src/user/user.service';
 import { AuthService } from './auth.service';
+import { Roles } from './decorators/roles.decorator';
 import { LoginDTO } from './login.dto';
+import { Role } from './models/role.enum';
+import { RolesGuard } from './roles.guard';
 
 @Controller('auth')
 export class AuthController {
   constructor(
     private userService: UserService,
     private authService: AuthService,
-
   ) { }
-
 
   @Get("/onlyauth")
   @UseGuards(AuthGuard("jwt"))
   async hiddenInformation(@Request() req) {
     return req.user;
   }
+
   @Get("/userDetail")
-  @UseGuards(AuthGuard("jwt"))
-  async userDetail(@Request() req) {
-    if (req.user.role === 'super admin') {
-      return await this.userService.userDetail();
-    }
-    if (req.user.role === 'admin') {
-      return await this.userService.specificDetailOfUser();
-    } else {
-      if (req.user.role === 'user') {
-        return await this.userService.getUser();
-      } else {
-        return "Something went Wrong!"
-      }
-    }
+  @Roles(Role.ADMIN, Role.SUPERADMIN)
+  @UseGuards(AuthGuard("jwt"), RolesGuard)
+  async userDetail() {
+    return await this.userService.userDetail();
+  }
+
+  @Get("/getUserDetail")
+  @Roles(Role.ADMIN, Role.SUPERADMIN, Role.USER,)
+  @UseGuards(AuthGuard("jwt"), RolesGuard)
+  async getUserDetail() {
+    return await this.userService.getUserDetail();
   }
 
   @Post('register')
@@ -56,3 +55,4 @@ export class AuthController {
     return { token };
   }
 }
+

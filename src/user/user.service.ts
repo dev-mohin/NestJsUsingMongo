@@ -51,8 +51,16 @@ export class UserService {
     return user;
   }
 
+  async getUserDetail() {
+    const user = await this.userModel.findOne({ role: 'user' });
+    if (!user) {
+      throw new HttpException('user not fetch', HttpStatus.BAD_REQUEST);
+    }
+    return user;
+  }
+
   async specificDetailOfUser() {
-    const userAdmin = await this.userModel.find({role: 'admin'});
+    const userAdmin = await this.userModel.find({ role: 'admin' });
     if (!userAdmin) {
       throw new HttpException('Admin not fetch', HttpStatus.BAD_REQUEST);
     }
@@ -64,7 +72,7 @@ export class UserService {
   }
 
   async getUser() {
-    const user = await this.userModel.find({role: 'user'});
+    const user = await this.userModel.find({ role: 'user' });
     if (!user) {
       throw new HttpException('users not fetch', HttpStatus.BAD_REQUEST);
     }

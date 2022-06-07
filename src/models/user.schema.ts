@@ -1,6 +1,7 @@
 import * as mongoose from 'mongoose';
 import * as bcrypt from 'bcrypt';
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
+import { Role } from 'src/auth/models/role.enum';
 
 @Schema()
 export class User {
@@ -26,7 +27,7 @@ export class User {
   isDeleted: boolean;
 
   @Prop()
-  role: string;
+  role: Role;
 }
 
 
